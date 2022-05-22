@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_app/services/notification_services.dart';
 import 'package:to_do_app/services/theme_services.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +10,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var notifyHelper;
+  @override
+  void initState() {
+    super.initState();
+    notifyHelper=NotifyHelper();
+    notifyHelper.initializeNotification();
+    notifyHelper.requestIOSPermissions();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,13 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-_appBar(){
+  _appBar(){
   return AppBar(
     leading: GestureDetector(
       onTap: (){
         ThemeServices().switchTheme();
+        notifyHelper.displayNotification(
+          title: 'Theme Changed',
+          body: ThemeServices().theme==ThemeMode.dark?"Dark":"Light",
+        );
+        notifyHelper.scheduledNotification();
       },
       child:const Icon(Icons.nightlight_round,size: 20,),
     ),
@@ -34,3 +46,5 @@ _appBar(){
     ],
   );
 }
+}
+
