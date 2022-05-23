@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_app/controller/task_controller.dart';
 import 'package:to_do_app/widgets/addtask_button.dart';
 import 'package:to_do_app/widgets/inputFieldTaskPage.dart';
 
+import '../models/task.dart';
 import '../services/theme_services.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -14,16 +16,15 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
-  
   //get notifyHelper => null;
   var dateSelected = DateTime.now();
   final _contName = TextEditingController();
-  final _contNote=TextEditingController();
-  final _contDate=TextEditingController();
-  final _contStartTime=TextEditingController();
-  final _contEndTime=TextEditingController();
-  final _contRemind=TextEditingController();
-  final _contRepeat=TextEditingController();
+  final _contNote = TextEditingController();
+  final _contDate = TextEditingController();
+  final _contStartTime = TextEditingController();
+  final _contEndTime = TextEditingController();
+  final _contRemind = TextEditingController();
+  final _contRepeat = TextEditingController();
 
   String startTime = "9:00 AM";
   String endTime = "9:00 PM";
@@ -33,6 +34,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   String _selectedRepeat = 'Daily';
   List<String> repeat = ['Daily', 'Only Once'];
+
+  final TaskController taskController = Get.put(TaskController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,7 +163,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
             ),
             const SizedBox(height: 5),
             Container(
-              margin: const EdgeInsets.only(left: 16, right: 30,top: 5),
+              margin: const EdgeInsets.only(left: 16, right: 30, top: 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -177,54 +180,62 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               setState(() {
-                                tick=0;
+                                tick = 0;
                               });
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.blue[800],
                               radius: 14,
-                              child:tick==0?const Icon(Icons.check):const SizedBox(),
+                              child: tick == 0
+                                  ? const Icon(Icons.check)
+                                  : const SizedBox(),
                             ),
                           ),
                           const SizedBox(
                             width: 5,
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               setState(() {
-                                tick=1;
+                                tick = 1;
                               });
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.pink,
                               radius: 14,
-                              child:tick==1?const Icon(Icons.check):const SizedBox(),
+                              child: tick == 1
+                                  ? const Icon(Icons.check)
+                                  : const SizedBox(),
                             ),
                           ),
                           const SizedBox(
                             width: 5,
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               setState(() {
-                                tick=2;
+                                tick = 2;
                               });
                             },
                             child: CircleAvatar(
                               backgroundColor: Colors.yellowAccent,
                               radius: 14,
-                              child:tick==2?const Icon(Icons.check):const SizedBox(),
+                              child: tick == 2
+                                  ? const Icon(Icons.check)
+                                  : const SizedBox(),
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  AddTaskButton(text: 'Submit', ontap: (){
-                    _validate();
-                  })
+                  AddTaskButton(
+                      text: 'Submit',
+                      ontap: () {
+                        _validate();
+                      })
                 ],
               ),
             ),
@@ -233,19 +244,31 @@ class _AddTaskPageState extends State<AddTaskPage> {
       ),
     );
   }
-  _addToDb(){
 
+  _addToDb() async {
+    int x=await taskController.addTask(task: Task(
+      note: _contNote.text,
+      title: _contName.text,
+      date: DateFormat.yMd().format(dateSelected),
+      startTime: startTime,
+      endTime: endTime,
+      remind: _selectedRemind,
+      repeat: _selectedRepeat,
+      color: tick,
+      isCompleted: 0,
+    ));
+    print('id is $x');
   }
-  _validate(){
-    if(_contName.text.isNotEmpty && _contNote.text.isNotEmpty){
+
+  _validate() {
+    if (_contName.text.isNotEmpty && _contNote.text.isNotEmpty) {
       print(_contName.text);
       print(_contNote.text);
-      
+
       _addToDb();
-      
+
       Get.back();
-    }
-    else{
+    } else {
       Get.snackbar('Failure', 'Please enter all fields correctly');
     }
   }
