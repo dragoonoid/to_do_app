@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_app/widgets/addtask_button.dart';
 import 'package:to_do_app/widgets/inputFieldTaskPage.dart';
 
 import '../services/theme_services.dart';
@@ -13,14 +14,29 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  
   //get notifyHelper => null;
   var dateSelected = DateTime.now();
-  var _contName = TextEditingController();
+  final _contName = TextEditingController();
+  final _contNote=TextEditingController();
+  final _contDate=TextEditingController();
+  final _contStartTime=TextEditingController();
+  final _contEndTime=TextEditingController();
+  final _contRemind=TextEditingController();
+  final _contRepeat=TextEditingController();
+
   String startTime = "9:00 AM";
   String endTime = "9:00 PM";
+  int _selectedRemind = 5;
+  List<int> remind = [5, 10, 15, 20];
+  int tick = 0;
+
+  String _selectedRepeat = 'Daily';
+  List<String> repeat = ['Daily', 'Only Once'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: _appBar(),
       body: SingleChildScrollView(
         child: Column(
@@ -46,14 +62,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
             InputFieldTaskPage(
               title: 'Note',
               hint: 'Write your note here',
-              controller: _contName,
+              controller: _contNote,
               widgt: null,
               size: 0.88,
             ),
             InputFieldTaskPage(
               title: 'Date',
               hint: DateFormat.yMd().format(dateSelected),
-              controller: _contName,
+              controller: _contDate,
               widgt: IconButton(
                 onPressed: () {
                   _getDate();
@@ -67,7 +83,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 InputFieldTaskPage(
                   title: 'Start Time',
                   hint: startTime,
-                  controller: _contName,
+                  controller: _contStartTime,
                   widgt: IconButton(
                     onPressed: () {
                       _getTime(true);
@@ -79,7 +95,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 InputFieldTaskPage(
                   title: 'End Time',
                   hint: endTime,
-                  controller: _contName,
+                  controller: _contEndTime,
                   widgt: IconButton(
                     onPressed: () {
                       _getTime(false);
@@ -90,10 +106,148 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
               ],
             ),
+            InputFieldTaskPage(
+              title: 'Remind',
+              hint: '$_selectedRemind minutes early',
+              controller: _contRemind,
+              size: 0.88,
+              widgt: DropdownButton(
+                items: remind.map<DropdownMenuItem<String>>((int x) {
+                  return DropdownMenuItem(
+                    value: x.toString(),
+                    child: Text(x.toString()),
+                  );
+                }).toList(),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.grey,
+                ),
+                iconSize: 32,
+                elevation: 4,
+                underline: Container(height: 0),
+                onChanged: (String? s) {
+                  setState(() {
+                    _selectedRemind = int.parse(s!);
+                  });
+                },
+              ),
+            ),
+            InputFieldTaskPage(
+              title: 'Repeat',
+              hint: _selectedRepeat,
+              controller: _contRepeat,
+              size: 0.88,
+              widgt: DropdownButton(
+                items: repeat.map<DropdownMenuItem<String>>((String x) {
+                  return DropdownMenuItem(
+                    value: x,
+                    child: Text(x),
+                  );
+                }).toList(),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.grey,
+                ),
+                iconSize: 32,
+                elevation: 4,
+                underline: Container(height: 0),
+                onChanged: (String? s) {
+                  setState(() {
+                    _selectedRepeat = s!;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 5),
+            Container(
+              margin: const EdgeInsets.only(left: 16, right: 30,top: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Color',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                tick=0;
+                              });
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue[800],
+                              radius: 14,
+                              child:tick==0?const Icon(Icons.check):const SizedBox(),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                tick=1;
+                              });
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.pink,
+                              radius: 14,
+                              child:tick==1?const Icon(Icons.check):const SizedBox(),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                tick=2;
+                              });
+                            },
+                            child: CircleAvatar(
+                              backgroundColor: Colors.yellowAccent,
+                              radius: 14,
+                              child:tick==2?const Icon(Icons.check):const SizedBox(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  AddTaskButton(text: 'Submit', ontap: (){
+                    _validate();
+                  })
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+  _addToDb(){
+
+  }
+  _validate(){
+    if(_contName.text.isNotEmpty && _contNote.text.isNotEmpty){
+      print(_contName.text);
+      print(_contNote.text);
+      
+      _addToDb();
+      
+      Get.back();
+    }
+    else{
+      Get.snackbar('Failure', 'Please enter all fields correctly');
+    }
   }
 
   _getTime(bool startBool) async {
@@ -101,18 +255,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
       context: context,
       initialTime: TimeOfDay(hour: 9, minute: 10),
     );
-    var formattedTime=x?.format(context);
-    if(x==null){
+    var formattedTime = x?.format(context);
+    if (x == null) {
       print('no time selected');
-    }
-    else if(startBool==true && formattedTime!=null){
+    } else if (startBool == true && formattedTime != null) {
       setState(() {
-        startTime=formattedTime;
+        startTime = formattedTime;
       });
-    }
-    else if(formattedTime!=null){
+    } else if (formattedTime != null) {
       setState(() {
-        endTime=formattedTime;
+        endTime = formattedTime;
       });
     }
   }

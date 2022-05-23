@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: _appBar(),
       body: Column(
         children: [
@@ -62,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _firstBar(){
     return Container(
+      //color: Theme.of(context).primaryColor,
             margin:const  EdgeInsets.only(top: 5,left: 20,right: 20,bottom: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

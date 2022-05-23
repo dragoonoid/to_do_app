@@ -24,7 +24,7 @@ class InputFieldTaskPage extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style:const  TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(
             height: 5,
@@ -48,7 +48,11 @@ class InputFieldTaskPage extends StatelessWidget {
                     controller: controller,
                     decoration: InputDecoration(
                       hintText: hint,
-                      //hintStyle: TextStyle(),
+                      hintStyle: TextStyle(
+                        color: ThemeServices().theme == ThemeMode.dark
+                        ? Colors.grey[100]
+                        : Colors.grey[800],
+                      ),
                     ),
                   ),
                 ),
