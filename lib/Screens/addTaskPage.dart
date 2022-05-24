@@ -233,9 +233,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   ),
                   AddTaskButton(
                       text: 'Submit',
-                      ontap: () {
-                        _validate();
-                      })
+                      ontap: () async{
+                        await _validate();
+                      }),
                 ],
               ),
             ),
@@ -258,14 +258,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
       isCompleted: 0,
     ));
     print('id is $x');
+    await taskController.getTasks();
   }
 
-  _validate() {
+  _validate()async {
     if (_contName.text.isNotEmpty && _contNote.text.isNotEmpty) {
       print(_contName.text);
       print(_contNote.text);
 
-      _addToDb();
+      await _addToDb();
 
       Get.back();
     } else {

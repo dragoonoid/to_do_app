@@ -32,9 +32,22 @@ class DbHelper {
       });
     }
   }
+  
   insert(Task? task) async {
     if(db!=null){
       return await db?.insert(tableName, task!.listToMap());
     }
+  }
+
+  Future<List<Map<String,dynamic>>> getTasks() async{
+    return await db!.query(tableName);
+  }
+
+  delete(Task? task) async {
+    return await db?.delete(tableName,where: 'id=?',whereArgs: [task!.id]);
+  }
+
+  update(Task? task) async{
+    return await db?.update(tableName, task!.listToMap(),where: 'id=?',whereArgs: [task.id]);
   }
 }
